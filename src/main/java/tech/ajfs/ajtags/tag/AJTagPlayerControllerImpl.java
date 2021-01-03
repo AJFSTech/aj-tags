@@ -7,18 +7,33 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tech.ajfs.ajtags.api.AJTagPlayer;
 import tech.ajfs.ajtags.api.AJTagPlayerController;
+import tech.ajfs.ajtags.persistence.Persistence;
 
 public class AJTagPlayerControllerImpl implements AJTagPlayerController {
 
+  private final Persistence persistence;
   private final Map<UUID, AJTagPlayer> tagPlayers;
 
-  public AJTagPlayerControllerImpl() {
+  public AJTagPlayerControllerImpl(Persistence persistence) {
+    this.persistence = persistence;
     this.tagPlayers = Maps.newConcurrentMap();
   }
 
   @Override
-  public @Nullable AJTagPlayer getPlayer(@NotNull UUID uuid) {
-    return this.tagPlayers.get(uuid);
+  public @Nullable AJTagPlayer getPlayer(@NotNull UUID uuid, boolean lookup) {
+    AJTagPlayer player = this.tagPlayers.get(uuid);
+    if (player != null) {
+      return player;
+    } else if (!lookup) {
+      return null;
+    }
+
+    return this.persistence.getImplementation().loadPlayer(uuid);
+  }
+
+  @Override
+  public void savePlayer(@NotNull AJTagPlayer player) {
+    this.persistence.getImplementation().savePlayer(player);
   }
 
   public void setTagPlayer(@NotNull UUID uuid, @NotNull AJTagPlayer tagPlayer) {

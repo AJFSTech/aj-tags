@@ -3,14 +3,14 @@ package tech.ajfs.ajtags.placeholder;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import tech.ajfs.ajtags.api.AJTag;
-import tech.ajfs.ajtags.api.AJTagApi;
 import tech.ajfs.ajtags.api.AJTagPlayer;
+import tech.ajfs.ajtags.api.AJTagsApi;
 
 public final class AJTagsPlaceholderProvider {
 
-  private final AJTagApi api;
+  private final AJTagsApi api;
 
-  public AJTagsPlaceholderProvider(AJTagApi api) {
+  public AJTagsPlaceholderProvider(AJTagsApi api) {
     this.api = api;
   }
 
@@ -21,7 +21,7 @@ public final class AJTagsPlaceholderProvider {
    * @return the display tag (if it exists) as a string
    */
   public @NotNull String getDisplayTag(@NotNull UUID playerUuid) {
-    AJTagPlayer tagPlayer = api.getTagPlayer(playerUuid);
+    AJTagPlayer tagPlayer = api.getTagPlayerController().getPlayer(playerUuid, false);
     if (tagPlayer == null) {
       return "";
     }
@@ -31,7 +31,7 @@ public final class AJTagsPlaceholderProvider {
   }
 
   public @NotNull String getTagName(@NotNull UUID playerUuid) {
-    AJTagPlayer tagPlayer = api.getTagPlayer(playerUuid);
+    AJTagPlayer tagPlayer = api.getTagPlayerController().getPlayer(playerUuid, false);
     if (tagPlayer == null) {
       return "";
     }

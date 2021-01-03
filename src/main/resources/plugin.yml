@@ -3,4 +3,4 @@ version: 1.0
 description: A uniquely customizable tag plugin
 author: AJFS Tech
 main: tech.ajfs.ajtags.AJTags
-softdepend: [PlaceholderAPI, MVdWPlaceholderAPI]
+softdepend: [ PlaceholderAPI, MVdWPlaceholderAPI ]

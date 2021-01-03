@@ -1,10 +1,12 @@
 package tech.ajfs.ajtags;
 
+import co.aikar.commands.BukkitCommandManager;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
-import tech.ajfs.ajtags.api.AJTagApi;
+import tech.ajfs.ajtags.api.AJTagsApi;
+import tech.ajfs.ajtags.command.AJTagsCommand;
 import tech.ajfs.ajtags.persistence.Persistence;
 import tech.ajfs.ajtags.persistence.PersistenceFactory;
 import tech.ajfs.ajtags.persistence.PersistenceOptions;
@@ -12,14 +14,13 @@ import tech.ajfs.ajtags.placeholder.AJTagsPlaceholderProvider;
 import tech.ajfs.ajtags.placeholder.impl.mvdw.AJTagsMvdwDisplayPlaceholder;
 import tech.ajfs.ajtags.placeholder.impl.mvdw.AJTagsMvdwNamePlaceholder;
 import tech.ajfs.ajtags.placeholder.impl.papi.AJTagsPapiPlaceholder;
-import tech.ajfs.ajtags.tag.AJTagApiImpl;
+import tech.ajfs.ajtags.tag.AJTagsApiImpl;
 
 public class AJTags extends JavaPlugin {
 
   private static final Logger LOGGER = Bukkit.getLogger();
 
   private Persistence persistence;
-  private AJTagApi tagApi;
 
   @Override
   public void onEnable() {
@@ -32,10 +33,10 @@ public class AJTags extends JavaPlugin {
       return;
     }
 
-    this.tagApi = new AJTagApiImpl(this.persistence);
+    AJTagsApi tagApi = new AJTagsApiImpl(this.persistence);
 
     // Registering placeholders
-    AJTagsPlaceholderProvider provider = new AJTagsPlaceholderProvider(this.tagApi);
+    AJTagsPlaceholderProvider provider = new AJTagsPlaceholderProvider(tagApi);
     if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
       new AJTagsPapiPlaceholder(provider).register();
     }
@@ -49,7 +50,14 @@ public class AJTags extends JavaPlugin {
 
     // Expose the tags API thorough the services provider
     Bukkit.getServicesManager()
-        .register(AJTagApi.class, this.tagApi, this, ServicePriority.Highest);
+        .register(AJTagsApi.class, tagApi, this, ServicePriority.Highest);
+
+    AJTagsMessages messages =
+        AJTagsMessages.fromMessages(getConfig().getConfigurationSection("messages"));
+
+    // Registering plugin commands
+    BukkitCommandManager commandManager = new BukkitCommandManager(this);
+    commandManager.registerCommand(new AJTagsCommand(tagApi, messages));
   }
 
   @Override
