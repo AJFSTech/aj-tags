@@ -57,7 +57,7 @@ public class AJTags extends JavaPlugin {
 
     // Registering plugin commands
     BukkitCommandManager commandManager = new BukkitCommandManager(this);
-    commandManager.registerCommand(new AJTagsCommand(tagApi, messages));
+    commandManager.registerCommand(new AJTagsCommand(tagApi, this.persistence, messages));
   }
 
   @Override

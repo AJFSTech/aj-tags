@@ -3,14 +3,18 @@ package tech.ajfs.ajtags.tag;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 import tech.ajfs.ajtags.api.AJTag;
+import tech.ajfs.ajtags.persistence.Persistence;
 
 @EqualsAndHashCode
 public class AJTagImpl implements AJTag {
 
+  private final Persistence persistence;
+
   private final String name;
   private String display;
 
-  public AJTagImpl(String name, String display) {
+  public AJTagImpl(String name, String display, Persistence persistence) {
+    this.persistence = persistence;
     this.name = name;
     this.display = display;
   }
@@ -30,4 +34,8 @@ public class AJTagImpl implements AJTag {
     this.display = display;
   }
 
+  @Override
+  public void save() {
+    this.persistence.getImplementation().saveTag(this);
+  }
 }

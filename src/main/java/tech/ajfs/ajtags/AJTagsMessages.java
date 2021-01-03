@@ -28,13 +28,14 @@ public class AJTagsMessages {
     setMessage(key, messageBuilder.toString());
   }
 
-  public void sendMessage(Player player, String key) {
+  public void sendMessage(Player player, String key, Object... args) {
     if (!this.messages.containsKey(key.toLowerCase(Locale.ROOT))) {
       throw new IllegalArgumentException("Message key " + key + " is not a message key");
     }
 
     String message = this.messages.get(key);
     if (!message.isEmpty()) {
+      message = replacePlaceholders(message, args);
       player.sendMessage(message);
     }
 
@@ -52,6 +53,14 @@ public class AJTagsMessages {
     }
 
     return messages;
+  }
+
+  private String replacePlaceholders(String message, Object... args) {
+    for (int i = 0; i < args.length; i++) {
+      String replacement = args[i].toString();
+      message = message.replace("{" + i + "}", replacement);
+    }
+    return message;
   }
 
   private static String color(String message) {

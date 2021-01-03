@@ -50,6 +50,11 @@ public class MySQLPersistenceImplementation extends HikariPersistenceImplementat
   }
 
   @Override
+  public void deleteTag(@NotNull AJTag tag) {
+
+  }
+
+  @Override
   public Set<AJTag> getAllTags() {
     return null;
   }

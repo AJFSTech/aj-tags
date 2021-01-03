@@ -21,10 +21,14 @@ public interface AJTag {
   String getDisplay();
 
   /**
-   * Sets a tag's display
+   * Sets a tag's display (does not save)
    *
    * @param display is the display of the tag
    */
   void setDisplay(@NotNull String display);
 
+  /**
+   * Saves the tag to persistence (blocking call)
+   */
+  void save();
 }

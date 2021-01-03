@@ -24,23 +24,23 @@ public final class Persistence {
   }
 
 
-  CompletableFuture<AJTagPlayer> loadPlayer(UUID uuid) {
+  public CompletableFuture<AJTagPlayer> loadPlayer(UUID uuid) {
     return CompletableFuture.supplyAsync(() -> this.implementation.loadPlayer(uuid));
   }
 
-  CompletableFuture<Void> savePlayer(@NotNull AJTagPlayer player) {
+  public CompletableFuture<Void> savePlayer(@NotNull AJTagPlayer player) {
     return CompletableFuture.runAsync(() -> this.implementation.savePlayer(player));
   }
 
-  CompletableFuture<AJTag> loadTag(@NotNull String name) {
-    return CompletableFuture.supplyAsync(() -> this.implementation.loadTag(name));
-  }
-
-  CompletableFuture<Void> saveTag(@NotNull AJTag tag) {
+  public CompletableFuture<Void> saveTag(@NotNull AJTag tag) {
     return CompletableFuture.runAsync(() -> this.implementation.saveTag(tag));
   }
 
-  CompletableFuture<Set<AJTag>> getAllTags() {
+  public CompletableFuture<Void> deleteTag(@NotNull AJTag tag) {
+    return CompletableFuture.runAsync(() -> this.implementation.deleteTag(tag));
+  }
+
+  public CompletableFuture<Set<AJTag>> getAllTags() {
     return CompletableFuture.supplyAsync(this.implementation::getAllTags);
   }
 

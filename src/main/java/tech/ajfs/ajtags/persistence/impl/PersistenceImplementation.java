@@ -59,6 +59,13 @@ public interface PersistenceImplementation {
   AJTag loadTag(@NotNull String name);
 
   /**
+   * Removes a tag from persistence
+   *
+   * @param tag is the tag to remove from persistence
+   */
+  void deleteTag(@NotNull AJTag tag);
+
+  /**
    * Saves an {@link AJTag} to persistent storage
    *
    * @param tag is the {@link AJTag} to save

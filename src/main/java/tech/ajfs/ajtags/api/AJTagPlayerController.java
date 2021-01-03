@@ -26,5 +26,4 @@ public interface AJTagPlayerController {
    * @param player is the player to save
    */
   void savePlayer(@NotNull AJTagPlayer player);
-
 }

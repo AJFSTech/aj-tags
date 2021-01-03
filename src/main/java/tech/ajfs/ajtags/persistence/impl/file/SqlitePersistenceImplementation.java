@@ -82,6 +82,11 @@ public class SqlitePersistenceImplementation implements PersistenceImplementatio
   }
 
   @Override
+  public void deleteTag(@NotNull AJTag tag) {
+
+  }
+
+  @Override
   public Set<AJTag> getAllTags() {
     return null;
   }

@@ -33,13 +33,17 @@ messages:
   # Admin Messages
   ###
 
+  # No permission
+  no-permission: "&cYou do not have permission to do that"
+
   # The help message for the admin /ajtags command
   admin-help:
-    - "&f&n&m===== &aAJTags Help &f&n&m====="
+    - "&f&n&m===== &aAJTags Admin Help &f&n&m====="
     - ""
     - " &a- &f/ajtags help &a- &fShows this message"
     - " &a- &f/ajtags createtag <name> <display> &a- &fCreates a tag"
     - " &a- &f/ajtags deletetag <name> &a- &fDeletes a tag"
+    - " &a- &f/ajtags modifytag <name> <new display> &a- &fModifies a tag's display"
     - " &a- &f/ajtags settag <player> <tag name> &a- &fSets a player's tag"
     - " &a- &f/ajtags removetag <player> &a- &fRemoves a player's tag"
     - "&f&n&m============="
@@ -47,17 +51,23 @@ messages:
   admin-tag-created: "&aTag with name &f{0} &aand display {1} &ahas been created" # Will replace {0} with the tag name and {1} with the tag display
   admin-tag-deleted: "&aTag with name &f{0} &ahas been deleted" # Will replace {0} with the tag name
   admin-tag-set: "&aPlayer &f{0} &ais now using tag &a{1}" # Will replace {0} with the player name and {1} with the tag name
-  admin-set-removed: "&aPlayer &f{0} &ais no longer using a tag" # Will replace {0} with the player name
+  admin-tag-removed: "&aPlayer &f{0} &ais no longer using a tag" # Will replace {0} with the player name
+
+  admin-tag-already-exists: "&aA tag with the name &f{0} &aalready exists"
+  admin-tag-modified: "&aTag with name &f{0} &anow has the display &f{1}"
+  admin-player-not-found: "&aPlayer &f{0} &acould not be found"
 
   tags-help:
     - "&f---- &aTags Help &f----"
     - ""
     - " &a- &f/tag(s) &a- &fOpens the tags menu"
+    - " &a- &f/tag(s) menu &a- &fOpens the tags menu"
     - " &a- &f/tag(s) help &a- &fShows this message"
     - " &a- &f/tag(s) equip <tag name> &a- &fEquip a tag"
     - " &a- &f/tag(s) unequip &a- &fUnequip your tag"
     - "&f&n&m============="
 
+  tag-doesnt-exist: "&aA tag with the name &f{0} &adoesn't exist"
   menu-open: "&aOpening tags menu..."
   tag-equipped: "&aYou are now using the {0} &atag" # Will replace {0} with the tag display
-  tag-unequipped: "&aYou are no longer wearing a tag"
+  tag-unequipped: "&aYou are no longer using a tag"

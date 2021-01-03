@@ -7,13 +7,11 @@ import tech.ajfs.ajtags.persistence.Persistence;
 
 public class AJTagsApiImpl implements AJTagsApi {
 
-  private final Persistence persistence;
   private final AJTagController tagController;
   private final AJTagPlayerController playerController;
 
   public AJTagsApiImpl(Persistence persistence) {
-    this.persistence = persistence;
-    this.tagController = new AJTagControllerImpl();
+    this.tagController = new AJTagControllerImpl(persistence);
     this.playerController = new AJTagPlayerControllerImpl(persistence);
   }
 

@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tech.ajfs.ajtags.AJTagsConstants;
 import tech.ajfs.ajtags.api.AJTag;
 import tech.ajfs.ajtags.api.AJTagController;
 import tech.ajfs.ajtags.api.AJTagPlayer;
@@ -47,7 +48,7 @@ public class AJTagPlayerImpl implements AJTagPlayer {
       return false;
     }
 
-    return player.hasPermission("ajtags.tag." + tag.getName());
+    return player.hasPermission(AJTagsConstants.TAG_PERMISSION_PREFIX + tag.getName());
   }
 
   @Override
@@ -57,14 +58,15 @@ public class AJTagPlayerImpl implements AJTagPlayer {
       return new ArrayList<>();
     }
 
-    if (player.hasPermission("ajtags.tag.*")) {
+    if (player.hasPermission(AJTagsConstants.TAG_PERMISSION_PREFIX + "*")) {
       return new ArrayList<>(this.tagController.getAllTags());
     }
 
     List<AJTag> tags = new ArrayList<>();
     for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions()) {
-      if (attachmentInfo.getPermission().startsWith("ajtags.tag.")) {
-        String tagName = attachmentInfo.getPermission().substring(11);
+      if (attachmentInfo.getPermission().startsWith(AJTagsConstants.TAG_PERMISSION_PREFIX)) {
+        String tagName =
+            attachmentInfo.getPermission().substring(AJTagsConstants.TAG_PERMISSION_PREFIX.length());
         AJTag tag = this.tagController.getTagByName(tagName);
         if (tag != null) {
           tags.add(tag);
