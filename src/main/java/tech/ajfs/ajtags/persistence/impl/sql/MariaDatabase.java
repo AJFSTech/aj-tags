@@ -5,12 +5,14 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import org.bukkit.entity.Player;
+import java.util.Set;
+import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tech.ajfs.ajtags.api.AJTag;
 import tech.ajfs.ajtags.persistence.DatabaseOptions;
 import tech.ajfs.ajtags.persistence.impl.SqlDatabase;
-import tech.ajfs.ajtags.tag.Tag;
+import tech.ajfs.ajtags.tag.AJTagControllerImpl;
 
 public class MariaDatabase extends SqlDatabase {
 
@@ -66,10 +68,9 @@ public class MariaDatabase extends SqlDatabase {
     try (Connection connection = this.dataSource.getConnection()) {
       try (PreparedStatement statement = connection.prepareStatement(
           "CREATE TABLE IF NOT EXISTS ? ("
-              + "id INT(7) UNSIGNED NOT NULL AUTO_INCREMENT,"
               + "tag_name VARCHAR(32) NOT NULL,"
               + "tag VARCHAR(64) NOT NULL,"
-              + "PRIMARY KEY (id)"
+              + "PRIMARY KEY (tag_name)"
               + ");")) {
         statement.setString(1, this.tagsDatabaseName);
         statement.execute();
@@ -78,8 +79,8 @@ public class MariaDatabase extends SqlDatabase {
       try (PreparedStatement statement = connection.prepareStatement(
           "CREATE TABLE IF NOT EXISTS ? ("
               + "uuid VARCHAR(36) NOT NULL,"
-              + "tag_id INT(7) NOT NULL,"
-              + "PRIMARY KEY(uuid, tag_id)"
+              + "tag_name VARCHAR(32) NOT NULL,"
+              + "PRIMARY KEY(uuid, tag_name)"
               + ");")) {
         statement.setString(1, this.playerTagsDatabaseName);
         statement.execute();
@@ -93,17 +94,28 @@ public class MariaDatabase extends SqlDatabase {
   }
 
   @Override
-  public void removeTag(@NotNull Player player) {
-
-  }
-
-  @Override
-  public void setTag(@NotNull Player player, @Nullable Tag tag) {
-
-  }
-
-  @Override
-  public @Nullable Tag getTag(@NotNull Player player) {
+  public @Nullable String getEquippedTagName(@NotNull UUID uuid) {
     return null;
   }
+
+  @Override
+  public void setPlayerTag(@NotNull UUID uuid, @Nullable AJTag tag) {
+
+  }
+
+  @Override
+  public void createTag(String name, String display) {
+
+  }
+
+  @Override
+  public void deleteTag(String name) {
+
+  }
+
+  @Override
+  public Set<AJTag> getAllTags(AJTagControllerImpl controller) {
+    return null;
+  }
+
 }

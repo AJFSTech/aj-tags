@@ -5,13 +5,16 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Set;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tech.ajfs.ajtags.api.AJTagController;
 import tech.ajfs.ajtags.persistence.DatabaseOptions;
 import tech.ajfs.ajtags.persistence.impl.SqlDatabase;
-import tech.ajfs.ajtags.tag.Tag;
+import tech.ajfs.ajtags.api.AJTag;
+import tech.ajfs.ajtags.tag.AJTagControllerImpl;
 
 @RequiredArgsConstructor
 public class SqliteDatabase extends SqlDatabase {
@@ -25,6 +28,7 @@ public class SqliteDatabase extends SqlDatabase {
     this.tagsDatabaseName = databaseOptions.getTablePrefix() + "tags";
     this.playerTagsDatabaseName = databaseOptions.getTablePrefix() + "playertags";
   }
+
   @Override
   protected @NotNull HikariConfig getHikariConfig(@NotNull File file) {
     HikariConfig config = new HikariConfig();
@@ -56,10 +60,9 @@ public class SqliteDatabase extends SqlDatabase {
     try (Connection connection = this.dataSource.getConnection()) {
       try (PreparedStatement statement = connection.prepareStatement(
           "CREATE TABLE IF NOT EXISTS ? ("
-              + "id INT(7) UNSIGNED NOT NULL AUTO_INCREMENT,"
-              + "tag VARCHAR(64) NOT NULL,"
               + "tag_name VARCHAR(32) NOT NULL,"
-              + "PRIMARY KEY (id)"
+              + "tag VARCHAR(64) NOT NULL,"
+              + "PRIMARY KEY (tag_name)"
               + ");")) {
         statement.setString(1, this.tagsDatabaseName);
         statement.execute();
@@ -68,8 +71,8 @@ public class SqliteDatabase extends SqlDatabase {
       try (PreparedStatement statement = connection.prepareStatement(
           "CREATE TABLE IF NOT EXISTS ? ("
               + "uuid VARCHAR(36) NOT NULL,"
-              + "tag_id INT(7) NOT NULL,"
-              + "PRIMARY KEY(uuid, tag_id)"
+              + "tag_name VARCHAR(32) NOT NULL,"
+              + "PRIMARY KEY(uuid, tag_name)"
               + ");")) {
         statement.setString(1, this.playerTagsDatabaseName);
         statement.execute();
@@ -83,12 +86,27 @@ public class SqliteDatabase extends SqlDatabase {
   }
 
   @Override
-  public void setTag(@NotNull Player player, @Nullable Tag tag) {
+  public void setPlayerTag(@NotNull UUID uuid, @Nullable AJTag tag) {
 
   }
 
   @Override
-  public @Nullable Tag getTag(@NotNull Player player) {
+  public @Nullable String getEquippedTagName(@NotNull UUID uuid) {
+    return null;
+  }
+
+  @Override
+  public void createTag(String name, String display) {
+
+  }
+
+  @Override
+  public void deleteTag(String name) {
+
+  }
+
+  @Override
+  public Set<AJTag> getAllTags(AJTagControllerImpl controller) {
     return null;
   }
 }

@@ -3,12 +3,9 @@ package tech.ajfs.ajtags.persistence.impl;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.File;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import tech.ajfs.ajtags.AJTags;
 import tech.ajfs.ajtags.persistence.AJTagsDatabase;
-import tech.ajfs.ajtags.tag.Tag;
 
 public abstract class SqlDatabase implements AJTagsDatabase {
 
@@ -30,12 +27,4 @@ public abstract class SqlDatabase implements AJTagsDatabase {
     return true;
   }
 
-  @Override
-  public abstract boolean createTables();
-
-  @Override
-  public abstract void setTag(@NotNull Player player, @Nullable Tag tag);
-
-  @Override
-  public abstract @Nullable Tag getTag(@NotNull Player player);
 }

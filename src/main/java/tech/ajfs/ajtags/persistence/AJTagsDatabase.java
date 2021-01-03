@@ -1,10 +1,12 @@
 package tech.ajfs.ajtags.persistence;
 
-import org.bukkit.entity.Player;
+import java.util.Set;
+import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tech.ajfs.ajtags.AJTags;
-import tech.ajfs.ajtags.tag.Tag;
+import tech.ajfs.ajtags.api.AJTag;
+import tech.ajfs.ajtags.tag.AJTagControllerImpl;
 
 public interface AJTagsDatabase {
 
@@ -25,25 +27,47 @@ public interface AJTagsDatabase {
   /**
    * Sets a player's tag in persistence
    *
-   * @param player is the player to set the tag for
-   * @param tag    is the tag to apply to the player (null if unsetting)
+   * @param uuid is the uuid of the player to set the tag for
+   * @param tag  is the tag to apply to the player (null if unsetting)
    */
- void setTag(@NotNull Player player, @Nullable Tag tag);
+  void setPlayerTag(@NotNull UUID uuid, @Nullable AJTag tag);
 
   /**
    * Removes a player's tag from persistence
    *
-   * @param player is the player to remove the tag for
+   * @param uuid is the uuid of the player to remove the tag from
    */
-  default void removeTag(@NotNull Player player) {
-    setTag(player, null);
+  default void removePlayerTag(@NotNull UUID uuid) {
+    setPlayerTag(uuid, null);
   }
 
   /**
-   * Gets the Tag object of a player
+   * Get's the player's equipped tag name
    *
-   * @return an @Tag instance of the player's tag
+   * @param uuid is the uuid of the player
    */
   @Nullable
-  Tag getTag(@NotNull Player player);
+  String getEquippedTagName(@NotNull UUID uuid);
+
+  /**
+   * Creates a tag in persistence
+   *
+   * @param name    is the name of the tag to create
+   * @param display is the tag's default display
+   */
+  void createTag(String name, String display);
+
+  /**
+   * Deletes a tag from persistence
+   *
+   * @param name is the name of the tag to delete
+   */
+  void deleteTag(String name);
+
+  /**
+   * @param controller a controller to create the tags with
+   * @return a set of all tags
+   */
+  Set<AJTag> getAllTags(AJTagControllerImpl controller);
+
 }
