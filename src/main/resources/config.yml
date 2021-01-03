@@ -8,8 +8,10 @@ database:
 
   ## These credentials can be ignored if using Sqlite, but are necessary for other persistence options ##
 
-  # The address of the database, in the format host:port
-  address: localhost:3306
+  # The host of the database (ie 127.0.0.1 or localhost)
+  host: localhost
+  # The port of the database (ie 3306)
+  port: 3306
   # The database to store data in
   database: minecraft
   # The username of the database (NOTE: it is not recommended to use root!)

@@ -14,25 +14,25 @@ import org.jetbrains.annotations.Nullable;
 import tech.ajfs.ajtags.api.AJTag;
 import tech.ajfs.ajtags.api.AJTagController;
 import tech.ajfs.ajtags.api.AJTagPlayer;
-import tech.ajfs.ajtags.persistence.AJTagsDatabase;
+import tech.ajfs.ajtags.persistence.Persistence;
 
 public class AJTagControllerImpl implements AJTagController {
 
-  private final AJTagsDatabase database;
+  private final Persistence persistence;
 
   private final Map<UUID, AJTagPlayer> tagPlayers;
 
   private final Map<String, AJTag> tagsByName;
 
-  public AJTagControllerImpl(AJTagsDatabase database) {
-    this.database = database;
+  public AJTagControllerImpl(Persistence persistence) {
+    this.persistence = persistence;
     this.tagPlayers = Maps.newConcurrentMap();
     this.tagsByName = Maps.newConcurrentMap();
   }
 
   @Override
   public void reloadTags() {
-    Set<AJTag> tagSet = this.database.getAllTags(this);
+    Set<AJTag> tagSet = this.persistence.getAllTags(this);
     this.tagsByName.clear();
     for (AJTag tag : tagSet) {
       this.tagsByName.put(tag.getName(), tag);

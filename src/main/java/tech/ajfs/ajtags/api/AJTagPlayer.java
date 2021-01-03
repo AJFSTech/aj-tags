@@ -1,10 +1,7 @@
 package tech.ajfs.ajtags.api;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import javax.swing.text.html.HTML.Tag;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface AJTagPlayer {

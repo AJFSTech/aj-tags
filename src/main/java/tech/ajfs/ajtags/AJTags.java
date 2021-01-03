@@ -4,18 +4,20 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import tech.ajfs.ajtags.api.AJTagController;
-import tech.ajfs.ajtags.persistence.AJTagsDatabase;
-import tech.ajfs.ajtags.persistence.DatabaseFactory;
-import tech.ajfs.ajtags.persistence.DatabaseOptions;
-import tech.ajfs.ajtags.placeholder.impl.AJTagsMvdwPlaceholder;
-import tech.ajfs.ajtags.placeholder.impl.AJTagsPapiPlaceholder;
+import tech.ajfs.ajtags.persistence.Persistence;
+import tech.ajfs.ajtags.persistence.PersistenceFactory;
+import tech.ajfs.ajtags.persistence.PersistenceOptions;
+import tech.ajfs.ajtags.placeholder.AJTagsPlaceholderProvider;
+import tech.ajfs.ajtags.placeholder.impl.mvdw.AJTagsMvdwDisplayPlaceholder;
+import tech.ajfs.ajtags.placeholder.impl.mvdw.AJTagsMvdwNamePlaceholder;
+import tech.ajfs.ajtags.placeholder.impl.papi.AJTagsPapiPlaceholder;
 import tech.ajfs.ajtags.tag.AJTagControllerImpl;
 
 public class AJTags extends JavaPlugin {
 
   private static final Logger LOGGER = Bukkit.getLogger();
 
-  private AJTagsDatabase database;
+  private Persistence database;
   private AJTagController tagController;
 
   @Override
@@ -23,8 +25,7 @@ public class AJTags extends JavaPlugin {
     saveDefaultConfig();
 
     loadDatabase();
-
-    if (database == null || !this.database.connect(this) || !this.database.createTables()) {
+    if (database == null) {
       LOGGER.warning("Could not connect to database.");
       Bukkit.getPluginManager().disablePlugin(this);
       return;
@@ -34,13 +35,16 @@ public class AJTags extends JavaPlugin {
     this.tagController.reloadTags();
 
     // Registering placeholders
+    AJTagsPlaceholderProvider provider = new AJTagsPlaceholderProvider(this.tagController);
     if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-      new AJTagsPapiPlaceholder(this.tagController).register();
+      new AJTagsPapiPlaceholder(provider).register();
     }
 
     if (Bukkit.getPluginManager().getPlugin("MVdWPlaceholderAPI") != null) {
       be.maximvdw.placeholderapi.PlaceholderAPI.registerPlaceholder(this, "ajtags_tag",
-          new AJTagsMvdwPlaceholder(this.tagController));
+          new AJTagsMvdwDisplayPlaceholder(provider));
+      be.maximvdw.placeholderapi.PlaceholderAPI.registerPlaceholder(this, "ajtags_name",
+          new AJTagsMvdwNamePlaceholder(provider));
     }
 
   }
@@ -51,8 +55,8 @@ public class AJTags extends JavaPlugin {
   }
 
   private void loadDatabase() {
-    DatabaseOptions options = DatabaseOptions.fromSection(
-        getConfig().getConfigurationSection("database"));
+    PersistenceOptions options = PersistenceOptions
+        .fromSection(getConfig().getConfigurationSection("database"));
 
     if (options == null) {
       LOGGER.warning(
@@ -60,7 +64,7 @@ public class AJTags extends JavaPlugin {
       return;
     }
 
-    this.database = new DatabaseFactory(options).createDatabase();
+    this.database = new PersistenceFactory(this).getInstance(options);
   }
 
 }
