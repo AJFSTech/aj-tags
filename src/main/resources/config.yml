@@ -1,0 +1,20 @@
+database:
+  # How the plugins data is stored
+  # Available Options:
+  #  - sqlite (will create a file named 'ajtags.db' containing data, no remote database needed)
+  #  - mysql (will require a remote database connection)
+  #  - mariadb (will require a remote database connection)
+  type: sqlite
+
+  ## These credentials can be ignored if using Sqlite, but are necessary for other persistence options ##
+
+  # The address of the database, in the format host:port
+  address: localhost:3306
+  # The database to store data in
+  database: minecraft
+  # The username of the database (NOTE: it is not recommended to use root!)
+  username: root
+  # The password of the database (leave empty if no password, but this is not recommended)
+  password: ''
+  # The prefix for any SQL table
+  table-prefix: 'ajtags_'

@@ -1,0 +1,5 @@
+name: AJTags
+version: 1.0
+description: A uniquely customizable tag plugin
+author: AJFS Tech
+main: tech.ajfs.ajtags.AJTags
