@@ -28,7 +28,8 @@ public class PersistenceFactory {
         throw new IllegalArgumentException("Unknown database type");
     }
 
-    persistence.init(this.plugin);
+    persistence.init();
+
     return persistence;
   }
 

@@ -2,13 +2,16 @@ package tech.ajfs.ajtags.persistence.impl.file;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Set;
+import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tech.ajfs.ajtags.AJTags;
+import tech.ajfs.ajtags.api.AJTag;
+import tech.ajfs.ajtags.api.AJTagPlayer;
 import tech.ajfs.ajtags.persistence.impl.PersistenceImplementation;
 
 public class SqlitePersistenceImplementation implements PersistenceImplementation {
@@ -18,7 +21,13 @@ public class SqlitePersistenceImplementation implements PersistenceImplementatio
 
 
   @Override
-  public void init(@NotNull AJTags plugin) {
+  public boolean init(@NotNull AJTags plugin) {
+    try {
+      Class.forName("org.sqlite.JDBC");
+    } catch (ClassNotFoundException err) {
+      err.printStackTrace();
+      return false;
+    }
 
     if (!plugin.getDataFolder().exists()) {
       plugin.getDataFolder().mkdirs();
@@ -35,6 +44,7 @@ public class SqlitePersistenceImplementation implements PersistenceImplementatio
     }
 
     this.url = "jdbc:sqlite:" + this.file.getAbsolutePath();
+    return true;
   }
 
   @Override
@@ -47,17 +57,32 @@ public class SqlitePersistenceImplementation implements PersistenceImplementatio
     if (this.url == null) {
       throw new SQLException("Unable to get connection from Sqlite (url is null)");
     }
-    try {
-      Class.forName("org.sqlite.JDBC");
-    } catch (ClassNotFoundException err) {
-      err.printStackTrace();
-      return null;
-    }
-    try {
-      return DriverManager.getConnection(this.url);
-    } catch (SQLException err) {
-      err.printStackTrace();
-      return null;
-    }
+
+    return DriverManager.getConnection(this.url);
+  }
+
+  @Override
+  public @Nullable AJTagPlayer loadPlayer(UUID uuid) {
+    return null;
+  }
+
+  @Override
+  public void savePlayer(@NotNull AJTagPlayer player) {
+
+  }
+
+  @Override
+  public AJTag loadTag(@NotNull String name) {
+    return null;
+  }
+
+  @Override
+  public void saveTag(@NotNull AJTag tag) {
+
+  }
+
+  @Override
+  public Set<AJTag> getAllTags() {
+    return null;
   }
 }

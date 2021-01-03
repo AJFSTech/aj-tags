@@ -1,12 +1,10 @@
 package tech.ajfs.ajtags.placeholder.impl.papi;
 
-import lombok.RequiredArgsConstructor;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import tech.ajfs.ajtags.placeholder.AJTagsPlaceholderImplementation;
 import tech.ajfs.ajtags.placeholder.AJTagsPlaceholderProvider;
 
-@RequiredArgsConstructor
 public class AJTagsPapiPlaceholder
     extends me.clip.placeholderapi.expansion.PlaceholderExpansion
     implements AJTagsPlaceholderImplementation {

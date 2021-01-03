@@ -2,7 +2,6 @@ package tech.ajfs.ajtags.placeholder.impl.mvdw;
 
 import be.maximvdw.placeholderapi.PlaceholderReplaceEvent;
 import org.jetbrains.annotations.NotNull;
-import tech.ajfs.ajtags.api.AJTagController;
 import tech.ajfs.ajtags.placeholder.AJTagsPlaceholderImplementation;
 import tech.ajfs.ajtags.placeholder.AJTagsPlaceholderProvider;
 

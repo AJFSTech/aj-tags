@@ -36,7 +36,7 @@ public abstract class HikariPersistenceImplementation implements PersistenceImpl
   protected abstract void setupHikariConfig(HikariConfig config, PersistenceOptions options);
 
   @Override
-  public final void init(@NotNull AJTags plugin) {
+  public final boolean init(@NotNull AJTags plugin) {
     HikariConfig config = new HikariConfig();
 
     config.setPoolName("ajtags-hikari");
@@ -62,6 +62,8 @@ public abstract class HikariPersistenceImplementation implements PersistenceImpl
     config.setMinimumIdle(2);
     config.setMaxLifetime(60000);
     config.setConnectionTimeout(30000);
+
+    return true;
   }
 
   @Override

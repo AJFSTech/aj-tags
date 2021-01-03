@@ -2,6 +2,7 @@ package tech.ajfs.ajtags.persistence.impl;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Set;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,8 +16,9 @@ public interface PersistenceImplementation {
    * Initializes the database connection
    *
    * @param plugin is the {@link AJTags} plugin instance
+   * @return whether the {@link PersistenceImplementation} successfully initialized
    */
-  void init(@NotNull AJTags plugin);
+  boolean init(@NotNull AJTags plugin);
 
   /**
    * Shuts down the database
@@ -32,17 +34,6 @@ public interface PersistenceImplementation {
   @NotNull
   Connection getConnection() throws SQLException;
 
-  /*
-  AJ Tags Methods
-   */
-
-  /**
-   * Save an {@link AJTagPlayer} to persistent storage
-   *
-   * @param player is the player to save
-   */
-  void saveUser(@NotNull AJTagPlayer player);
-
   /**
    * Loads an {@link AJTagPlayer} from persistent storage
    *
@@ -51,6 +42,13 @@ public interface PersistenceImplementation {
    */
   @Nullable
   AJTagPlayer loadPlayer(UUID uuid);
+
+  /**
+   * Save an {@link AJTagPlayer} to persistent storage
+   *
+   * @param player is the player to save
+   */
+  void savePlayer(@NotNull AJTagPlayer player);
 
   /**
    * Loads an {@link AJTag} from persistent storage
@@ -66,4 +64,11 @@ public interface PersistenceImplementation {
    * @param tag is the {@link AJTag} to save
    */
   void saveTag(@NotNull AJTag tag);
+
+  /**
+   * Gets a {@link Set} containing all {@link AJTag}s stored in persistent storage
+   *
+   * @return a {@link Set} of all {@link AJTag}
+   */
+  Set<AJTag> getAllTags();
 }

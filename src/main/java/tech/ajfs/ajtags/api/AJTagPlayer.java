@@ -2,22 +2,25 @@ package tech.ajfs.ajtags.api;
 
 import java.util.List;
 import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface AJTagPlayer {
 
   /**
-   * Get's the player's UUID
+   * Returns the player's UUID
    *
    * @return the player's UUID
    */
+  @NotNull
   UUID getUuid();
 
   /**
-   * Get's a players equipped tag
+   * Returns a players equipped tag
    *
    * @return the player's equipped {@link AJTag}
    */
+  @Nullable
   AJTag getTag();
 
   /**
@@ -40,12 +43,13 @@ public interface AJTagPlayer {
    * @param tag is the tag
    * @return whether the player can use the tag
    */
-  boolean canUseTag(AJTag tag);
+  boolean canUseTag(@NotNull AJTag tag);
 
   /**
    * Returns a list of tags a player can use
    *
    * @return a list of tags the player can use
    */
-  List<AJTag> getUseableTags();
+  @NotNull
+  List<@NotNull AJTag> getUseableTags();
 }
