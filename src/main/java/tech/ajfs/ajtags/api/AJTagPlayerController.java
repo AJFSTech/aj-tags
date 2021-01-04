@@ -10,6 +10,14 @@ import org.jetbrains.annotations.Nullable;
 public interface AJTagPlayerController {
 
   /**
+   * Creates and internally stores a new {@link AJTagPlayer}
+   *
+   * @param uuid the uuid of the player
+   * @return a new (and empty) {@link AJTagPlayer} instance
+   */
+  AJTagPlayer createPlayer(@NotNull UUID uuid);
+
+  /**
    * Returns the {@link AJTagPlayer} instance from a given UUID
    *
    * @param uuid   is the UUID of the player to get the {@link AJTagPlayer} instance of

@@ -5,14 +5,15 @@ import java.util.Set;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tech.ajfs.ajtags.AJTags;
 import tech.ajfs.ajtags.api.AJTag;
 import tech.ajfs.ajtags.api.AJTagPlayer;
 import tech.ajfs.ajtags.persistence.PersistenceOptions;
 
 public class MySQLPersistenceImplementation extends HikariPersistenceImplementation {
 
-  public MySQLPersistenceImplementation(PersistenceOptions options) {
-    super(options);
+  public MySQLPersistenceImplementation(AJTags plugin, PersistenceOptions options) {
+    super(plugin, options);
   }
 
   @Override

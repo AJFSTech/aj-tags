@@ -1,6 +1,7 @@
 package tech.ajfs.ajtags.api;
 
 import org.jetbrains.annotations.NotNull;
+import tech.ajfs.ajtags.tag.AJTagModifier;
 
 public interface AJTag {
 
@@ -28,7 +29,10 @@ public interface AJTag {
   void setDisplay(@NotNull String display);
 
   /**
-   * Saves the tag to persistence (blocking call)
+   * Returns a tag's display with a given {@link AJTagModifier}
+   *
+   * @param modifier is the modifier to apply
+   * @return the display with the modifier applied
    */
-  void save();
+  String getDisplay(@NotNull AJTagModifier modifier);
 }

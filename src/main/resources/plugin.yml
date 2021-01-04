@@ -1,6 +1,6 @@
 name: AJTags
-version: 1.0
+version: ${project.version}
 description: A uniquely customizable tag plugin
 author: AJFS Tech
 main: tech.ajfs.ajtags.AJTags
-softdepend: [ PlaceholderAPI, MVdWPlaceholderAPI ]
+softdepends: [ PlaceholderAPI, MVdWPlaceholderAPI ]

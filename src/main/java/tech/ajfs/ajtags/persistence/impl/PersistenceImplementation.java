@@ -9,16 +9,23 @@ import org.jetbrains.annotations.Nullable;
 import tech.ajfs.ajtags.AJTags;
 import tech.ajfs.ajtags.api.AJTag;
 import tech.ajfs.ajtags.api.AJTagPlayer;
+import tech.ajfs.ajtags.persistence.StatementProcessor;
 
 public interface PersistenceImplementation {
 
   /**
+   * Returns the {@link AJTags} instance
+   *
+   * @return the {@link AJTags} instance
+   */
+  AJTags getPlugin();
+
+  /**
    * Initializes the database connection
    *
-   * @param plugin is the {@link AJTags} plugin instance
    * @return whether the {@link PersistenceImplementation} successfully initialized
    */
-  boolean init(@NotNull AJTags plugin);
+  boolean init();
 
   /**
    * Shuts down the database
@@ -33,6 +40,13 @@ public interface PersistenceImplementation {
    */
   @NotNull
   Connection getConnection() throws SQLException;
+
+  /**
+   * Returns the {@link StatementProcessor} for the persistence implementation
+   *
+   * @return the {@link StatementProcessor} instance
+   */
+  StatementProcessor getProcessor();
 
   /**
    * Loads an {@link AJTagPlayer} from persistent storage

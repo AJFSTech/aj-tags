@@ -7,15 +7,33 @@ import java.sql.SQLException;
 import org.jetbrains.annotations.NotNull;
 import tech.ajfs.ajtags.AJTags;
 import tech.ajfs.ajtags.persistence.PersistenceOptions;
+import tech.ajfs.ajtags.persistence.StatementProcessor;
 import tech.ajfs.ajtags.persistence.impl.PersistenceImplementation;
 
 public abstract class HikariPersistenceImplementation implements PersistenceImplementation {
 
-  private final PersistenceOptions options;
+  private final AJTags plugin;
+
+  protected final PersistenceOptions options;
+  protected final StatementProcessor statementProcessor;
+
   private HikariDataSource dataSource;
 
-  public HikariPersistenceImplementation(PersistenceOptions options) {
+  public HikariPersistenceImplementation(AJTags plugin, PersistenceOptions options) {
+    this.plugin = plugin;
     this.options = options;
+    this.statementProcessor = new StatementProcessor().addReplacement("{prefix}",
+        options::getTablePrefix);
+  }
+
+  @Override
+  public final AJTags getPlugin() {
+    return this.plugin;
+  }
+
+  @Override
+  public final StatementProcessor getProcessor() {
+    return this.statementProcessor;
   }
 
   /**
@@ -36,7 +54,7 @@ public abstract class HikariPersistenceImplementation implements PersistenceImpl
   protected abstract void setupHikariConfig(HikariConfig config, PersistenceOptions options);
 
   @Override
-  public final boolean init(@NotNull AJTags plugin) {
+  public final boolean init() {
     HikariConfig config = new HikariConfig();
 
     config.setPoolName("ajtags-hikari");

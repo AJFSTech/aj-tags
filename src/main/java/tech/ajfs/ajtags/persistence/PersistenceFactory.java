@@ -16,19 +16,21 @@ public class PersistenceFactory {
 
     switch (options.getType()) {
       case MYSQL:
-        persistence = new Persistence(plugin, new MySQLPersistenceImplementation(options));
+        persistence = new Persistence(new MySQLPersistenceImplementation(this.plugin, options));
         break;
       case MARIADB:
-        persistence = new Persistence(plugin, new MariaDBPersistenceImplementation(options));
+        persistence = new Persistence(new MariaDBPersistenceImplementation(this.plugin, options));
         break;
       case SQLITE:
-        persistence = new Persistence(plugin, new SqlitePersistenceImplementation());
+        persistence = new Persistence(new SqlitePersistenceImplementation(this.plugin, options));
         break;
       default:
         throw new IllegalArgumentException("Unknown database type");
     }
 
-    persistence.init();
+    if (!persistence.init()) {
+      return null;
+    }
 
     return persistence;
   }

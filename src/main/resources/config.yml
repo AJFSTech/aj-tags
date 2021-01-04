@@ -65,6 +65,7 @@ messages:
     - " &a- &f/tag(s) help &a- &fShows this message"
     - " &a- &f/tag(s) equip <tag name> &a- &fEquip a tag"
     - " &a- &f/tag(s) unequip &a- &fUnequip your tag"
+    - " &a- &f/tag(s) customize &a- &fOpens the customizatiom menu"
     - "&f&n&m============="
 
   tag-doesnt-exist: "&aA tag with the name &f{0} &adoesn't exist"

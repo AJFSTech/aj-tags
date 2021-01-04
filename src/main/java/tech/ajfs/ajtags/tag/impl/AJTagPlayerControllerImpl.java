@@ -1,10 +1,11 @@
-package tech.ajfs.ajtags.tag;
+package tech.ajfs.ajtags.tag.impl;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tech.ajfs.ajtags.api.AJTagController;
 import tech.ajfs.ajtags.api.AJTagPlayer;
 import tech.ajfs.ajtags.api.AJTagPlayerController;
 import tech.ajfs.ajtags.persistence.Persistence;
@@ -12,11 +13,18 @@ import tech.ajfs.ajtags.persistence.Persistence;
 public class AJTagPlayerControllerImpl implements AJTagPlayerController {
 
   private final Persistence persistence;
+  private final AJTagController tagController;
   private final Map<UUID, AJTagPlayer> tagPlayers;
 
-  public AJTagPlayerControllerImpl(Persistence persistence) {
+  public AJTagPlayerControllerImpl(Persistence persistence, AJTagController tagController) {
     this.persistence = persistence;
+    this.tagController = tagController;
     this.tagPlayers = Maps.newConcurrentMap();
+  }
+
+  @Override
+  public AJTagPlayer createPlayer(@NotNull UUID uuid) {
+    return this.tagPlayers.put(uuid, new AJTagPlayerImpl(uuid, this.tagController));
   }
 
   @Override

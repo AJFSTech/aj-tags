@@ -26,7 +26,7 @@ public final class AJTagsPlaceholderProvider {
       return "";
     }
 
-    AJTag tag = tagPlayer.getTag();
+    AJTag tag = tagPlayer.getActiveTag();
     return tag != null ? tag.getDisplay() : "";
   }
 
@@ -36,7 +36,7 @@ public final class AJTagsPlaceholderProvider {
       return "";
     }
 
-    AJTag tag = tagPlayer.getTag();
+    AJTag tag = tagPlayer.getActiveTag();
     return tag != null ? tag.getName() : "";
   }
 

@@ -2,25 +2,30 @@ package tech.ajfs.ajtags;
 
 import co.aikar.commands.BukkitCommandManager;
 import java.util.logging.Logger;
+import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import tech.ajfs.ajtags.api.AJTagController;
+import tech.ajfs.ajtags.api.AJTagPlayerController;
 import tech.ajfs.ajtags.api.AJTagsApi;
 import tech.ajfs.ajtags.command.AJTagsCommand;
 import tech.ajfs.ajtags.persistence.Persistence;
 import tech.ajfs.ajtags.persistence.PersistenceFactory;
 import tech.ajfs.ajtags.persistence.PersistenceOptions;
 import tech.ajfs.ajtags.placeholder.AJTagsPlaceholderProvider;
-import tech.ajfs.ajtags.placeholder.impl.mvdw.AJTagsMvdwDisplayPlaceholder;
-import tech.ajfs.ajtags.placeholder.impl.mvdw.AJTagsMvdwNamePlaceholder;
 import tech.ajfs.ajtags.placeholder.impl.papi.AJTagsPapiPlaceholder;
-import tech.ajfs.ajtags.tag.AJTagsApiImpl;
+import tech.ajfs.ajtags.tag.impl.AJTagControllerImpl;
+import tech.ajfs.ajtags.tag.impl.AJTagsApiImpl;
 
 public class AJTags extends JavaPlugin {
 
   private static final Logger LOGGER = Bukkit.getLogger();
 
   private Persistence persistence;
+  @Getter
+  private AJTagsApi getApi;
 
   @Override
   public void onEnable() {
@@ -28,12 +33,14 @@ public class AJTags extends JavaPlugin {
 
     loadDatabase();
     if (persistence == null) {
-      LOGGER.warning("Could not connect to database.");
+      LOGGER.warning("Could not connect to database. Disabling.");
       Bukkit.getPluginManager().disablePlugin(this);
       return;
     }
 
     AJTagsApi tagApi = new AJTagsApiImpl(this.persistence);
+    Bukkit.getServicesManager()
+        .register(AJTagsApi.class, tagApi, this, ServicePriority.Highest);
 
     // Registering placeholders
     AJTagsPlaceholderProvider provider = new AJTagsPlaceholderProvider(tagApi);
@@ -41,6 +48,7 @@ public class AJTags extends JavaPlugin {
       new AJTagsPapiPlaceholder(provider).register();
     }
 
+    /*
     if (Bukkit.getPluginManager().getPlugin("MVdWPlaceholderAPI") != null) {
       be.maximvdw.placeholderapi.PlaceholderAPI.registerPlaceholder(this, "ajtags_tag",
           new AJTagsMvdwDisplayPlaceholder(provider));
@@ -48,9 +56,9 @@ public class AJTags extends JavaPlugin {
           new AJTagsMvdwNamePlaceholder(provider));
     }
 
+     */
+
     // Expose the tags API thorough the services provider
-    Bukkit.getServicesManager()
-        .register(AJTagsApi.class, tagApi, this, ServicePriority.Highest);
 
     AJTagsMessages messages =
         AJTagsMessages.fromMessages(getConfig().getConfigurationSection("messages"));
@@ -58,10 +66,29 @@ public class AJTags extends JavaPlugin {
     // Registering plugin commands
     BukkitCommandManager commandManager = new BukkitCommandManager(this);
     commandManager.registerCommand(new AJTagsCommand(tagApi, this.persistence, messages));
+
+
+    // Once plugin is fully done with its initialization, load the data
+
+    AJTagControllerImpl controllerImpl = (AJTagControllerImpl) getApi.getTagController();
+
+    if(!controllerImpl.init()) {
+      LOGGER.warning("Could not load tags. Disabling");
+      Bukkit.getPluginManager().disablePlugin(this);
+    }
+
+    // Will run when the server is fully loaded
+    Bukkit.getScheduler().runTask(this, () -> {
+      for (Player player : Bukkit.getOnlinePlayers()) {
+        this.persistence.loadPlayer(player.getUniqueId());
+      }
+    });
   }
 
   @Override
   public void onDisable() {
+    // Unregister API service
+    Bukkit.getServicesManager().unregisterAll(this);
     this.persistence.getImplementation().shutdown();
   }
 

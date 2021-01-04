@@ -1,4 +1,4 @@
-package tech.ajfs.ajtags.tag;
+package tech.ajfs.ajtags.tag.impl;
 
 import tech.ajfs.ajtags.api.AJTagController;
 import tech.ajfs.ajtags.api.AJTagPlayerController;
@@ -12,7 +12,7 @@ public class AJTagsApiImpl implements AJTagsApi {
 
   public AJTagsApiImpl(Persistence persistence) {
     this.tagController = new AJTagControllerImpl(persistence);
-    this.playerController = new AJTagPlayerControllerImpl(persistence);
+    this.playerController = new AJTagPlayerControllerImpl(persistence, this.tagController);
   }
 
   @Override

@@ -1,4 +1,4 @@
-package tech.ajfs.ajtags.tag;
+package tech.ajfs.ajtags.tag.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,7 @@ import tech.ajfs.ajtags.AJTagsConstants;
 import tech.ajfs.ajtags.api.AJTag;
 import tech.ajfs.ajtags.api.AJTagController;
 import tech.ajfs.ajtags.api.AJTagPlayer;
+import tech.ajfs.ajtags.tag.AJTagModifier;
 
 public class AJTagPlayerImpl implements AJTagPlayer {
 
@@ -20,6 +21,8 @@ public class AJTagPlayerImpl implements AJTagPlayer {
   private final AJTagController tagController;
 
   private AJTag tag;
+  private AJTagModifier modifier;
+
 
   public AJTagPlayerImpl(UUID uuid, AJTagController tagController) {
     this.uuid = uuid;
@@ -32,7 +35,7 @@ public class AJTagPlayerImpl implements AJTagPlayer {
   }
 
   @Override
-  public AJTag getTag() {
+  public AJTag getActiveTag() {
     return this.tag;
   }
 
@@ -52,29 +55,18 @@ public class AJTagPlayerImpl implements AJTagPlayer {
   }
 
   @Override
-  public @NotNull List<@NotNull AJTag> getUseableTags() {
-    Player player = Bukkit.getPlayer(this.uuid);
-    if (player == null) {
-      return new ArrayList<>();
-    }
+  public String getEffectiveDisplay() {
+    return this.tag.getDisplay(this.modifier);
+  }
 
-    if (player.hasPermission(AJTagsConstants.TAG_PERMISSION_PREFIX + "*")) {
-      return new ArrayList<>(this.tagController.getAllTags());
-    }
+  @Override
+  public AJTagModifier getModifier() {
+    return this.modifier;
+  }
 
-    List<AJTag> tags = new ArrayList<>();
-    for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions()) {
-      if (attachmentInfo.getPermission().startsWith(AJTagsConstants.TAG_PERMISSION_PREFIX)) {
-        String tagName =
-            attachmentInfo.getPermission().substring(AJTagsConstants.TAG_PERMISSION_PREFIX.length());
-        AJTag tag = this.tagController.getTagByName(tagName);
-        if (tag != null) {
-          tags.add(tag);
-        }
-      }
-    }
-
-    return tags;
+  @Override
+  public void setModifier(@Nullable AJTagModifier modifier) {
+    this.modifier = modifier;
   }
 
   @Override

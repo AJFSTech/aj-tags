@@ -13,16 +13,13 @@ import tech.ajfs.ajtags.persistence.impl.PersistenceImplementation;
 
 @RequiredArgsConstructor
 public final class Persistence {
-
-  private final AJTags plugin;
-
+  
   @Getter
   private final PersistenceImplementation implementation;
 
-  public void init() {
-    this.implementation.init(this.plugin);
+  public boolean init() {
+    return this.implementation.init();
   }
-
 
   public CompletableFuture<AJTagPlayer> loadPlayer(UUID uuid) {
     return CompletableFuture.supplyAsync(() -> this.implementation.loadPlayer(uuid));

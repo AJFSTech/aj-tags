@@ -1,10 +1,12 @@
-package tech.ajfs.ajtags.tag;
+package tech.ajfs.ajtags.tag.impl;
 
 import com.google.common.collect.Maps;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tech.ajfs.ajtags.api.AJTag;
@@ -21,6 +23,20 @@ public class AJTagControllerImpl implements AJTagController {
     this.tags = Maps.newConcurrentMap();
   }
 
+  public boolean init() {
+    Set<AJTag> tags;
+    try {
+      tags = persistence.getImplementation().getAllTags();
+    } catch (SQLException err) {
+      err.printStackTrace();
+      return false;
+    }
+    for (AJTag tag : tags) {
+      this.tags.put(tag.getName(), tag);
+    }
+    return true;
+  }
+
   @Override
   public @Nullable AJTag getTagByName(@NotNull String name) {
     return this.tags.get(name.toLowerCase(Locale.ROOT));
@@ -32,7 +48,7 @@ public class AJTagControllerImpl implements AJTagController {
       throw new IllegalArgumentException("Tag with name " + name + " already exists");
     }
 
-    AJTag tag = new AJTagImpl(name, display, this.persistence);
+    AJTag tag = new AJTagImpl(name, display);
     this.tags.put(tag.getName().toLowerCase(Locale.ROOT), tag);
 
     if (save) {

@@ -5,14 +5,15 @@ import java.util.Set;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tech.ajfs.ajtags.AJTags;
 import tech.ajfs.ajtags.api.AJTag;
 import tech.ajfs.ajtags.api.AJTagPlayer;
 import tech.ajfs.ajtags.persistence.PersistenceOptions;
 
 public class MariaDBPersistenceImplementation extends HikariPersistenceImplementation {
 
-  public MariaDBPersistenceImplementation(PersistenceOptions options) {
-    super(options);
+  public MariaDBPersistenceImplementation(AJTags plugin, PersistenceOptions options) {
+    super(plugin, options);
   }
 
   @Override
