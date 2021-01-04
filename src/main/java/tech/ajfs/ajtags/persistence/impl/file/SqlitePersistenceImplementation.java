@@ -8,9 +8,15 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tech.ajfs.ajtags.AJTags;
@@ -20,6 +26,8 @@ import tech.ajfs.ajtags.api.AJTagsApi;
 import tech.ajfs.ajtags.persistence.PersistenceOptions;
 import tech.ajfs.ajtags.persistence.StatementProcessor;
 import tech.ajfs.ajtags.persistence.impl.PersistenceImplementation;
+import tech.ajfs.ajtags.tag.AJTagModifier;
+import tech.ajfs.ajtags.tag.AJTagModifier.AJTagModifierBuilder;
 import tech.ajfs.ajtags.tag.impl.AJTagImpl;
 
 public class SqlitePersistenceImplementation implements PersistenceImplementation {
@@ -78,14 +86,22 @@ public class SqlitePersistenceImplementation implements PersistenceImplementatio
   private static final String DELETE_TAG_QUERY =
       "DELETE FROM {prefix}" + TAGS_TABLE_NAME + " WHERE tag_name = ?;";
   private static final String UPSERT_TAG_QUERY =
-      "INSERT INTO {prefix}" + TAGS_TABLE_NAME + " (tag_name, tag_display) VALUES (?, ?) ON "
-          + "CONFLICT(tag_name) DO UPDATE SET tag_display = ?;";
+      "REPLACE INTO {prefix}" + TAGS_TABLE_NAME + " (tag_name, tag_display) VALUES (?, ?)";
   private static final String LOAD_TAG_QUERY =
       "SELECT DISTINCT tag_display FROM {prefix}" + TAGS_TABLE_NAME + " WHERE tag_name = ?;";
 
   // Player queries
   private static final String LOAD_PLAYER_QUERY = "SELECT equipped_tag_name, "
-      + "equipped_modification_id FROM {prefix}" + TAGS_TABLE_NAME + " WHERE uuid = ?;";
+      + "equipped_modification_id FROM {prefix}" + USER_TABLE_NAME + " WHERE uuid = ?;";
+  private static final String GET_PLAYER_MODS_QUERY =
+      "SELECT modification_id, tag_name FROM {prefix}" + MODIFICATIONS_TABLE_NAME + " WHERE "
+          + "modification_owner = ?;";
+  private static final String GET_MOD_DATA_QUERY =
+      "SELECT character_index, color FROM {prefix}" + MODIFICATIONS_DATA_TABLE_NAME + " WHERE "
+          + "modification_id = ?";
+  private static final String SAVE_PLAYER_DATA_QUERY =
+      "REPLACE INTO {prefix}" + USER_TABLE_NAME
+          + " (uuid, equipped_tag_name, equipped_modification_id) VALUES (?, ?, ?);";
 
   private String url;
 
@@ -137,7 +153,7 @@ public class SqlitePersistenceImplementation implements PersistenceImplementatio
       }
 
       try (PreparedStatement modificationDataTable = this.statementProcessor
-          .prepareStatement(connection, CREATE_TAGS_TABLE_QUERY)) {
+          .prepareStatement(connection, CREATE_MODIFICATION_DATA_TABLE_QUERY)) {
         modificationDataTable.execute();
       }
     } catch (SQLException err) {
@@ -150,7 +166,6 @@ public class SqlitePersistenceImplementation implements PersistenceImplementatio
 
   @Override
   public void shutdown() {
-
   }
 
   @Override
@@ -170,21 +185,82 @@ public class SqlitePersistenceImplementation implements PersistenceImplementatio
   @Override
   public @Nullable AJTagPlayer loadPlayer(UUID uuid) {
     AJTagsApi api = Bukkit.getServicesManager().getRegistration(AJTagsApi.class).getProvider();
+    String uuidString = uuid.toString();
 
     AJTagPlayer player = api.getTagPlayerController().createPlayer(uuid);
 
     try (Connection connection = getConnection()) {
+      Map<Integer, AJTagModifier> modifiers = new HashMap<>();
+
+      try (PreparedStatement playerModsStatement =
+          this.statementProcessor.prepareStatement(connection, GET_PLAYER_MODS_QUERY)) {
+        playerModsStatement.setString(1, uuidString);
+
+        Map<Integer, AJTag> modificationIds = new HashMap<>();
+        List<Integer> invalidatedIds = new ArrayList<>();
+
+        ResultSet results = playerModsStatement.executeQuery();
+        while (results.next()) {
+          int id = results.getInt("modification_id");
+          String tagName = results.getString("tag_name");
+          AJTag tag = api.getTagController().getTagByName(tagName);
+          if (tag == null) {
+            invalidatedIds.add(id);
+          } else {
+            modificationIds.put(id, tag);
+          }
+        }
+
+        for (Map.Entry<Integer, AJTag> entry : modificationIds.entrySet()) {
+          try (PreparedStatement modDataStatement =
+              this.statementProcessor.prepareStatement(connection, GET_MOD_DATA_QUERY)) {
+            modDataStatement.setInt(1, entry.getKey());
+
+            AJTagModifierBuilder builder = new AJTagModifierBuilder(entry.getValue());
+
+            ResultSet dataResults = modDataStatement.executeQuery();
+            while (dataResults.next()) {
+              int index = dataResults.getInt("character_index");
+              ChatColor color = ChatColor.valueOf(dataResults.getString("color"));
+              builder.setColour(index, color);
+            }
+
+            if (builder.isEmpty()) {
+              invalidatedIds.add(entry.getKey());
+            } else {
+              modifiers.put(entry.getKey(), builder.build(entry.getKey()));
+            }
+          }
+        }
+      }
+
+      for (AJTagModifier modifier : modifiers.values()) {
+        player.addModifier(modifier);
+      }
+
       try (PreparedStatement statement = this.statementProcessor.prepareStatement(connection,
           LOAD_PLAYER_QUERY)) {
-        statement.setString(1, uuid.toString());
+        statement.setString(1, uuidString);
 
-        ResultSet resultSet = statement.executeQuery();
-        if (resultSet.next()) {
-          String tagName = resultSet.getString("tag_name");
+        ResultSet results = statement.executeQuery();
+        if (results.next()) {
+          String tagName = results.getString("tag_name");
           if (tagName != null) {
             AJTag tag = api.getTagController().getTagByName(tagName);
             if (tag != null) {
               player.setTag(tag);
+
+              int modifierId = results.getInt("modification_id");
+              if (modifierId > 0) { // Will be 0 if null
+                AJTagModifier modifier = modifiers.get(modifierId);
+                if (modifier != null && modifier.getApplicableTag().equals(tag)) {
+                  player.setModifier(modifier);
+                } else {
+                  savePlayer(player); // Update the inactive modifier
+                }
+              }
+            } else {
+              savePlayer(player); // Remove the inactive tag
             }
           }
         }
@@ -198,7 +274,27 @@ public class SqlitePersistenceImplementation implements PersistenceImplementatio
 
   @Override
   public void savePlayer(@NotNull AJTagPlayer player) {
+    try (Connection connection = getConnection()) {
+      try (PreparedStatement statement = this.statementProcessor.prepareStatement(connection,
+          SAVE_PLAYER_DATA_QUERY)) {
+        statement.setString(1, player.getUuid().toString());
+        if (player.getActiveTag() == null) {
+          statement.setNull(2, Types.VARCHAR);
+          statement.setNull(3, Types.VARCHAR);
+        } else {
+          statement.setString(2, player.getActiveTag().getName());
+          if (player.getActiveModifier() != null) {
+            statement.setInt(3, player.getActiveModifier().getId());
+          } else {
+            statement.setNull(3, Types.INTEGER);
+          }
+        }
 
+        statement.execute();
+      }
+    } catch (SQLException err) {
+      err.printStackTrace();
+    }
   }
 
   @Override
@@ -226,7 +322,6 @@ public class SqlitePersistenceImplementation implements PersistenceImplementatio
           UPSERT_TAG_QUERY)) {
         statement.setString(1, tag.getName());
         statement.setString(2, tag.getDisplay());
-        statement.setString(3, tag.getDisplay());
         statement.execute();
       }
     } catch (SQLException err) {

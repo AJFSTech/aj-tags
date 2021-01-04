@@ -16,6 +16,7 @@ public interface AJTagPlayer {
   @NotNull
   UUID getUuid();
 
+
   /**
    * Returns a players equipped @link AJTag}
    *
@@ -46,12 +47,28 @@ public interface AJTagPlayer {
   }
 
   /**
+   * Adds a modifier to the player (will save when the player is saved)
+   *
+   * @param modifier is the modifier to give to the player
+   */
+  void addModifier(@NotNull AJTagModifier modifier);
+
+  /**
+   * Returns a list of tag modifiers a player has from a given tag
+   *
+   * @param tag is the {@link AJTag} to get {@link AJTagModifier} for
+   * @return a list of {@link AJTagModifier} that the player has for a given {@link AJTag}
+   */
+  @NotNull
+  List<@NotNull AJTagModifier> getModifiers(@NotNull AJTag tag);
+
+  /**
    * Returns the player's current {@link AJTagModifier}
    *
    * @return the current {@link AJTagModifier}
    */
   @Nullable
-  AJTagModifier getModifier();
+  AJTagModifier getActiveModifier();
 
   /**
    * Sets a player's current {@link AJTagModifier}

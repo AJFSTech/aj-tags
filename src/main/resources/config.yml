@@ -38,7 +38,7 @@ messages:
 
   # The help message for the admin /ajtags command
   admin-help:
-    - "&f&n&m===== &aAJTags Admin Help &f&n&m====="
+    - "&f&n&m=====&r&a AJTags Admin Help &f&n&m====="
     - ""
     - " &a- &f/ajtags help &a- &fShows this message"
     - " &a- &f/ajtags createtag <name> <display> &a- &fCreates a tag"
@@ -46,7 +46,6 @@ messages:
     - " &a- &f/ajtags modifytag <name> <new display> &a- &fModifies a tag's display"
     - " &a- &f/ajtags settag <player> <tag name> &a- &fSets a player's tag"
     - " &a- &f/ajtags removetag <player> &a- &fRemoves a player's tag"
-    - "&f&n&m============="
 
   admin-tag-created: "&aTag with name &f{0} &aand display {1} &ahas been created" # Will replace {0} with the tag name and {1} with the tag display
   admin-tag-deleted: "&aTag with name &f{0} &ahas been deleted" # Will replace {0} with the tag name
@@ -66,7 +65,6 @@ messages:
     - " &a- &f/tag(s) equip <tag name> &a- &fEquip a tag"
     - " &a- &f/tag(s) unequip &a- &fUnequip your tag"
     - " &a- &f/tag(s) customize &a- &fOpens the customizatiom menu"
-    - "&f&n&m============="
 
   tag-doesnt-exist: "&aA tag with the name &f{0} &adoesn't exist"
   menu-open: "&aOpening tags menu..."

@@ -44,11 +44,7 @@ public class AJTagPlayerControllerImpl implements AJTagPlayerController {
     this.persistence.getImplementation().savePlayer(player);
   }
 
-  public void setTagPlayer(@NotNull UUID uuid, @NotNull AJTagPlayer tagPlayer) {
-    this.tagPlayers.put(uuid, tagPlayer);
-  }
-
-  public void unloadTagPlayer(@NotNull UUID uuid) {
-    this.tagPlayers.remove(uuid);
+  public AJTagPlayer unloadTagPlayer(@NotNull UUID uuid) {
+    return this.tagPlayers.remove(uuid);
   }
 }

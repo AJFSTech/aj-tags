@@ -1,5 +1,6 @@
 package tech.ajfs.ajtags.command;
 
+import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CatchUnknown;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Default;
@@ -16,7 +17,7 @@ import tech.ajfs.ajtags.persistence.Persistence;
 
 @RequiredArgsConstructor
 @CommandAlias("tags|tag")
-public class TagsCommand {
+public class TagsCommand extends BaseCommand {
 
   private final AJTagsApi api;
   private final AJTagsMenu menu;

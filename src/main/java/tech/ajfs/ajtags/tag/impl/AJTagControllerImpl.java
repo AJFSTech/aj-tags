@@ -1,7 +1,6 @@
 package tech.ajfs.ajtags.tag.impl;
 
 import com.google.common.collect.Maps;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
@@ -24,13 +23,7 @@ public class AJTagControllerImpl implements AJTagController {
   }
 
   public boolean init() {
-    Set<AJTag> tags;
-    try {
-      tags = persistence.getImplementation().getAllTags();
-    } catch (SQLException err) {
-      err.printStackTrace();
-      return false;
-    }
+    Set<AJTag> tags = persistence.getImplementation().getAllTags();
     for (AJTag tag : tags) {
       this.tags.put(tag.getName(), tag);
     }
