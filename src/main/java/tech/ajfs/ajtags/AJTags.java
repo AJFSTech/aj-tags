@@ -1,7 +1,10 @@
 package tech.ajfs.ajtags;
 
 import co.aikar.commands.BukkitCommandManager;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -12,11 +15,13 @@ import tech.ajfs.ajtags.command.AJTagsCommand;
 import tech.ajfs.ajtags.command.TagsCommand;
 import tech.ajfs.ajtags.listener.PlayerConnectionListener;
 import tech.ajfs.ajtags.menu.AJTagsMenu;
+import tech.ajfs.ajtags.menu.AJTagsMenuOptions;
 import tech.ajfs.ajtags.persistence.Persistence;
 import tech.ajfs.ajtags.persistence.PersistenceFactory;
 import tech.ajfs.ajtags.persistence.PersistenceOptions;
 import tech.ajfs.ajtags.placeholder.AJTagsPlaceholderProvider;
-import tech.ajfs.ajtags.placeholder.impl.papi.AJTagsPapiPlaceholder;
+import tech.ajfs.ajtags.placeholder.impl.mvdw.AJTagsMvdwPlaceholderRegistry;
+import tech.ajfs.ajtags.placeholder.impl.papi.AJTagsPapiPlaceholderRegistry;
 import tech.ajfs.ajtags.tag.impl.AJTagControllerImpl;
 import tech.ajfs.ajtags.tag.impl.AJTagPlayerControllerImpl;
 import tech.ajfs.ajtags.tag.impl.AJTagsApiImpl;
@@ -42,21 +47,39 @@ public class AJTags extends JavaPlugin {
     Bukkit.getServicesManager()
         .register(AJTagsApi.class, tagApi, this, ServicePriority.Highest);
 
-    // Registering placeholders
+    // Register metrics with placeholder data
     AJTagsPlaceholderProvider provider = new AJTagsPlaceholderProvider(tagApi);
     if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-      new AJTagsPapiPlaceholder(provider).register();
+      new AJTagsPapiPlaceholderRegistry().register(this, provider);
     }
 
-    /*
     if (Bukkit.getPluginManager().getPlugin("MVdWPlaceholderAPI") != null) {
-      be.maximvdw.placeholderapi.PlaceholderAPI.registerPlaceholder(this, "ajtags_tag",
-          new AJTagsMvdwDisplayPlaceholder(provider));
-      be.maximvdw.placeholderapi.PlaceholderAPI.registerPlaceholder(this, "ajtags_name",
-          new AJTagsMvdwNamePlaceholder(provider));
+      new AJTagsMvdwPlaceholderRegistry().register(this, provider);
     }
 
-     */
+    // Register metrics if enabled
+    if (getConfig().getBoolean("use-metrics")) {
+      Metrics metrics = new Metrics(this, AJTagsConstants.BSTATS_ID);
+      metrics.addCustomChart(new Metrics.AdvancedPie("placeholders", () -> {
+        Map<String, Integer> usedPlugins = new HashMap<>();
+
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+          usedPlugins.put("PlaceholderAPI", 1);
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("MVdWPlaceholderAPI") != null) {
+          usedPlugins.put("MVdWPlaceholderAPI", 1);
+        }
+
+        if (usedPlugins.isEmpty()) {
+          usedPlugins.put("None", 1);
+        }
+
+        return usedPlugins;
+      }));
+    }
+
+    // Registering placeholders
 
     // Expose the tags API thorough the services provider
 
@@ -72,8 +95,13 @@ public class AJTags extends JavaPlugin {
     // Registering plugin commands
     BukkitCommandManager commandManager = new BukkitCommandManager(this);
     commandManager.registerCommand(new AJTagsCommand(tagApi, this.persistence, messages));
-    commandManager.registerCommand(new TagsCommand(tagApi, new AJTagsMenu(), this.persistence,
-        messages));
+    commandManager.registerCommand(new TagsCommand(
+        tagApi,
+        new AJTagsMenu(this,
+            AJTagsMenuOptions.fromSection(getConfig().getConfigurationSection("menu"))),
+        this.persistence,
+        messages
+    ));
 
     // Once plugin is fully done with its initialization, load the data
 

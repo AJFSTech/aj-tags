@@ -244,7 +244,7 @@ public class SqlitePersistenceImplementation implements PersistenceImplementatio
 
         ResultSet results = statement.executeQuery();
         if (results.next()) {
-          String tagName = results.getString("tag_name");
+          String tagName = results.getString("equipped_tag_name");
           if (tagName != null) {
             AJTag tag = api.getTagController().getTagByName(tagName);
             if (tag != null) {

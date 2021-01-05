@@ -21,6 +21,40 @@ database:
   # The prefix for any SQL table
   table-prefix: 'ajtags_'
 
+# Menu options
+# Items can have the following fields: material, name, lore, damage
+# The materials must match from the Material Javadocs, linked below.
+# If you are using 1.8, view materials here: https://helpch.at/docs/1.8.8/org/bukkit/Material.html
+# If you are using latest, view materials here: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+# If you are using any other version, find the appropriate docs on https://helpch.at/docs (scroll down to your version)
+
+menu:
+  filler-item:
+    material: STAINED_GLASS_PANE
+    damage: 15
+    name: ""
+  back-page-item: # The back page item
+    material: ARROW
+    name: "&aPrevious Page"
+  next-page-item: # The next page item
+    material: ARROW
+    name: "&aNext Page"
+  page-info-item:
+    material: ARROW
+    name: "&aPage {page}" # {page} will be replaced with the current page
+  back-menu-item: # The item present on sub menus to go back to the main menu
+    material: BARRIER
+    name: "&cBack"
+
+  main: # Main menu options
+    title: "&6&lTags Menu" # The title of the main menu
+    tags-item: # The item to view the tags menu
+      material: NAME_TAG
+      name: "&aView Tags"
+    presets-item:
+      material: PAPER
+      name: "&aView Presets"
+
 # Configure all chat messages sent by the plugin. & colors are accepted.
 # Set a value to '' to make it blank. All messages may be single strings:
 # help: "this is a string"
@@ -52,9 +86,9 @@ messages:
   admin-tag-set: "&aPlayer &f{0} &ais now using tag &a{1}" # Will replace {0} with the player name and {1} with the tag name
   admin-tag-removed: "&aPlayer &f{0} &ais no longer using a tag" # Will replace {0} with the player name
 
-  admin-tag-already-exists: "&aA tag with the name &f{0} &aalready exists"
-  admin-tag-modified: "&aTag with name &f{0} &anow has the display &f{1}"
-  admin-player-not-found: "&aPlayer &f{0} &acould not be found"
+  admin-tag-already-exists: "&aA tag with the name &f{0} &aalready exists" # Will replace {0} with the tag name
+  admin-tag-modified: "&aTag with name &f{0} &anow has the display &f{1}" # Will replace {0} with the tag name and {1} with the tag display
+  admin-player-not-found: "&aPlayer &f{0} &acould not be found" # Will replace {0} with the player name
 
   tags-help:
     - "&f---- &aTags Help &f----"
@@ -66,7 +100,10 @@ messages:
     - " &a- &f/tag(s) unequip &a- &fUnequip your tag"
     - " &a- &f/tag(s) customize &a- &fOpens the customizatiom menu"
 
-  tag-doesnt-exist: "&aA tag with the name &f{0} &adoesn't exist"
+  tag-doesnt-exist: "&aA tag with the name &f{0} &adoesn't exist" # Will replace {0} with the tag name
   menu-open: "&aOpening tags menu..."
   tag-equipped: "&aYou are now using the {0} &atag" # Will replace {0} with the tag display
   tag-unequipped: "&aYou are no longer using a tag"
+
+# Set to 'false' to opt out of bStats metrics
+use-metrics: true
